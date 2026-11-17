@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Linking TikTok, Sculpt</title>
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#EBE8E2;color:#141414;font:16px/1.5 system-ui,-apple-system,sans-serif;padding:24px;box-sizing:border-box;text-align:center}
+  main{max-width:420px;width:100%}
+  img{width:88px;height:88px;border-radius:50%}
+  h1{font-size:22px;margin:12px 0 6px}
+  p{margin:0 0 14px}
+  code{display:block;background:#fff;border:2px solid #141414;border-radius:12px;padding:12px;font:13px ui-monospace,Menlo,monospace;word-break:break-all;text-align:left;margin-bottom:12px}
+  button{font:600 16px system-ui;background:#3FA34D;color:#fff;border:0;border-radius:999px;padding:12px 26px;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+  <img src="icon.png" alt="">
+  <h1 id="t">Almost done</h1>
+  <p id="m">Copy this and paste it as a message in the same account channel in the Sculpt Marketing Discord. The bot will finish linking the account.</p>
+  <code id="c" hidden></code>
+  <button id="b" hidden>Copy</button>
+</main>
+<script>
+// TikTok sends the sign-in back here. The code is single-use, expires in a few
+// minutes and is useless without the app secret, which only the bot has.
+// Nothing is stored or sent anywhere by this page.
+(function () {
+  var q = new URLSearchParams(location.search);
+  var t = document.getElementById('t'), m = document.getElementById('m');
+  if (q.get('error')) { t.textContent = 'Not linked'; m.textContent = q.get('error_description') || q.get('error'); return; }
+  if (!q.get('code') || !q.get('state')) { t.textContent = 'Nothing to link here'; m.textContent = 'This page is only used while connecting a TikTok account.'; return; }
+  var text = 'tiktok-link ' + q.get('state') + ' ' + q.get('code');
+  var c = document.getElementById('c'), b = document.getElementById('b');
+  c.textContent = text; c.hidden = false; b.hidden = false;
+  b.onclick = function () {
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { b.textContent = 'Copied ✓'; }, function () {
+      var r = document.createRange(); r.selectNodeContents(c); var s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected, now copy';
+    });
+  };
+})();
+</script>
+</body>
+</html>
